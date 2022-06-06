@@ -1,36 +1,59 @@
+// Initializing module aliases
 var Engine = Matter.Engine,
   World = Matter.World,
   Events = Matter.Events,
   Bodies = Matter.Bodies,
   Body = Matter.Body,
-  Collision = Matter.Collision,
   Mouse = Matter.Mouse,
   MouseConstraint = Matter.MouseConstraint;
 
+// Declaring variables for engine
 var engine;
 var world;
+
+// Declaring variables for table and balls
 var whiteBall;
 var blackBall;
 var balls = [];
 var holes = [];
 var boundaries = [];
 
+// Declaring variables for mouse-balls constraints
 var mouse;
 var mConstraint;
 
+// Declaring positions snapshot
+var snapshot = [];
+var shots = [];
+
+// Set proxy to trigger takeSnapshot on balls stopping
+var isBallMoving = { value: false };
+var isBallMovingProxy = new Proxy(isBallMoving, {
+  set: function (target, key, value) {
+    if (isBallMoving.value == true && value == false) {
+      takeSnapshot();
+    }
+    target[key] = value;
+  },
+});
+
+// Function that creates objects in world using engine
 function setup() {
-  var canvas = createCanvas(820, 420);
+  var canvas = createCanvas(1240, 620);
   engine = Engine.create();
   engine.gravity.scale = 0;
   world = engine.world;
 
   // initialize boudary width (shuld be big because collision detection bug)
   var boundaryWidth = 10000000;
-  var boundaryOffset = boundaryWidth / 2 - 25;
+  var offset = 30;
+  var boundaryOffset = boundaryWidth / 2 - offset;
 
   // Initializing balls positions
   var startPositionWidth = (width / 4) * 3;
   var startPositionHeight = height / 2;
+  var ballSize = 15;
+  var holeSize = 20;
 
   // Creating boundaries
   boundaries.push(
@@ -47,143 +70,151 @@ function setup() {
   );
 
   // Creating holes as sensors (sensors read collisions, bit objects pass through it)
-  holes.push(new Circle(25, 25, 15, true, "hole"));
-  holes.push(new Circle(width / 2, 20, 15, true, "hole"));
-  holes.push(new Circle(width - 25, 25, 15, true, "hole"));
-  holes.push(new Circle(25, height - 25, 15, true, "hole"));
-  holes.push(new Circle(width / 2, height - 20, 15, true, "hole"));
-  holes.push(new Circle(width - 25, height - 25, 15, true, "hole"));
+  holes.push(new Circle(offset, offset, holeSize, true, "hole"));
+  holes.push(new Circle(width / 2, offset, holeSize, true, "hole"));
+  holes.push(new Circle(width - offset, offset, holeSize, true, "hole"));
+  holes.push(new Circle(offset, height - offset, holeSize, true, "hole"));
+  holes.push(new Circle(width / 2, height - offset, holeSize, true, "hole"));
+  holes.push(
+    new Circle(width - offset, height - offset, holeSize, true, "hole")
+  );
 
-  // Creating balls on the table from left to right, top to bottom
+  // // Creating balls on the table from left to right, top to bottom
   balls.push(
-    (whiteBall = new Circle(width / 4, startPositionHeight, 10, false, "white"))
+    (whiteBall = new Circle(
+      startPositionWidth / 3,
+      startPositionHeight,
+      ballSize,
+      false,
+      "white"
+    ))
   );
   balls.push(
-    new Circle((width / 4) * 3, startPositionHeight, 10, false, "player1")
+    new Circle((width / 4) * 3, startPositionHeight, ballSize, false, "player1")
   );
   balls.push(
     new Circle(
-      startPositionWidth + Math.ceil(10 * sqrt(3)),
-      startPositionHeight - 10,
-      10,
+      startPositionWidth + Math.ceil(ballSize * sqrt(3)),
+      startPositionHeight - ballSize,
+      ballSize,
       false,
       "player2"
     )
   );
   balls.push(
     new Circle(
-      startPositionWidth + Math.ceil(10 * sqrt(3)),
-      startPositionHeight + 10,
-      10,
+      startPositionWidth + Math.ceil(ballSize * sqrt(3)),
+      startPositionHeight + ballSize,
+      ballSize,
       false,
       "player1"
     )
   );
   balls.push(
     new Circle(
-      startPositionWidth + 2 * Math.ceil(10 * sqrt(3)),
-      startPositionHeight - 20,
-      10,
+      startPositionWidth + 2 * Math.ceil(ballSize * sqrt(3)),
+      startPositionHeight - 2 * ballSize,
+      ballSize,
       false,
       "player1"
     )
   );
   balls.push(
-    (blacBall = new Circle(
-      startPositionWidth + 2 * Math.ceil(10 * sqrt(3)),
+    (blackBall = new Circle(
+      startPositionWidth + 2 * Math.ceil(ballSize * sqrt(3)),
       // width / 4 + 10,
       startPositionHeight,
-      10,
+      ballSize,
       false,
       "black"
     ))
   );
   balls.push(
     new Circle(
-      startPositionWidth + 2 * Math.ceil(10 * sqrt(3)),
-      startPositionHeight + 20,
-      10,
+      startPositionWidth + 2 * Math.ceil(ballSize * sqrt(3)),
+      startPositionHeight + 2 * ballSize,
+      ballSize,
       false,
       "player2"
     )
   );
   balls.push(
     new Circle(
-      startPositionWidth + 3 * Math.ceil(10 * sqrt(3)),
-      startPositionHeight - 30,
-      10,
+      startPositionWidth + 3 * Math.ceil(ballSize * sqrt(3)),
+      startPositionHeight - 3 * ballSize,
+      ballSize,
       false,
       "player1"
     )
   );
   balls.push(
     new Circle(
-      startPositionWidth + 3 * Math.ceil(10 * sqrt(3)),
-      startPositionHeight - 10,
-      10,
+      startPositionWidth + 3 * Math.ceil(ballSize * sqrt(3)),
+      startPositionHeight - ballSize,
+      ballSize,
       false,
       "player2"
     )
   );
   balls.push(
     new Circle(
-      startPositionWidth + 3 * Math.ceil(10 * sqrt(3)),
-      startPositionHeight + 10,
-      10,
+      startPositionWidth + 3 * Math.ceil(ballSize * sqrt(3)),
+      startPositionHeight + ballSize,
+      ballSize,
       false,
       "player1"
     )
   );
   balls.push(
     new Circle(
-      startPositionWidth + 3 * Math.ceil(10 * sqrt(3)),
-      startPositionHeight + 30,
-      10,
+      startPositionWidth + 3 * Math.ceil(ballSize * sqrt(3)),
+      startPositionHeight + 3 * ballSize,
+      ballSize,
       false,
       "player2"
     )
   );
   balls.push(
     new Circle(
-      startPositionWidth + 4 * Math.ceil(10 * sqrt(3)),
-      startPositionHeight - 40,
-      10,
+      startPositionWidth + 4 * Math.ceil(ballSize * sqrt(3)),
+      startPositionHeight - 4 * ballSize,
+      ballSize,
       false,
       "player1"
     )
   );
   balls.push(
     new Circle(
-      startPositionWidth + 4 * Math.ceil(10 * sqrt(3)),
-      startPositionHeight - 20,
-      10,
+      startPositionWidth + 4 * Math.ceil(ballSize * sqrt(3)),
+      startPositionHeight - 2 * ballSize,
+      ballSize,
       false,
       "player2"
     )
   );
   balls.push(
     new Circle(
-      startPositionWidth + 4 * Math.ceil(10 * sqrt(3)),
+      startPositionWidth + 4 * Math.ceil(ballSize * sqrt(3)),
       startPositionHeight,
-      10,
+      ballSize,
       false,
       "player1"
     )
   );
   balls.push(
     new Circle(
-      startPositionWidth + 4 * Math.ceil(10 * sqrt(3)),
-      startPositionHeight + 20,
-      10,
+      startPositionWidth + 4 * Math.ceil(ballSize * sqrt(3)),
+      startPositionHeight + 2 * ballSize,
+      ballSize,
       false,
       "player2"
     )
   );
   balls.push(
     new Circle(
-      startPositionWidth + 4 * Math.ceil(10 * sqrt(3)),
-      startPositionHeight + 40,
-      10,
+      startPositionWidth + 4 * Math.ceil(ballSize * sqrt(3)),
+      startPositionHeight + 4 * ballSize,
+      ballSize,
       false,
       "player2"
     )
@@ -208,8 +239,8 @@ function handleCollision(event) {
   const { pairs } = event;
   pairs.forEach((pair) => {
     const { bodyA, bodyB } = pair;
-    // If bodyA is hole delete bodyB
     if (bodyA.label.includes("hole")) {
+      // If bodyA is hole delete bodyB
       for (var i = 0; i < balls.length; i++) {
         if (balls[i].body == bodyB) {
           balls.splice(i, 1);
@@ -217,6 +248,7 @@ function handleCollision(event) {
         }
       }
     } else if (bodyB.label.includes("hole")) {
+      // If bodyA is hole delete bodyB
       for (var i = 0; i < balls.length; i++) {
         if (balls[i].body == bodyA) {
           balls.splice(i, 1);
@@ -229,10 +261,16 @@ function handleCollision(event) {
 
 // Funtion that applys random force to white ball on mouse click
 function mousePressed() {
-  Body.applyForce(whiteBall.body, whiteBall.body.position, {
-    x: random(100, 500),
-    y: random(100, 500),
-  });
+  if (!isBallMoving.value) {
+    Body.applyForce(whiteBall.body, whiteBall.body.position, {
+      x: random(500, 1000),
+      y: random(500, 1000),
+    });
+  }
+}
+
+function keyPressed() {
+  setBalls();
 }
 
 // Function that draws objects created in the engine
@@ -258,4 +296,7 @@ function draw() {
   for (var i = 0; i < balls.length; i++) {
     balls[i].show();
   }
+
+  // Set isBallMoving.value
+  isBallMovingProxy.value = isObjectMoving(balls);
 }

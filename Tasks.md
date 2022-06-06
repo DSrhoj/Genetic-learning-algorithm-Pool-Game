@@ -1,9 +1,13 @@
 # TODO
 
-Save ball positions after first shot
+-[x] Save ball positions after first shot
 
-? algorithm for setting balls on the field
+-[x] Check when balls are steady
 
-Calculate score for shot based on choosen parameters
+-[] (optional) Save ball positions after first shot to a FILE
 
-Create genetic learning algorithm
+-[] (optional) algorithm for setting balls on the field
+
+-[] Calculate score for shot based on choosen parameters
+
+-[] Create genetic learning algorithm
