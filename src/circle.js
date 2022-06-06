@@ -16,8 +16,18 @@ function Circle(x, y, r, isStatic, label) {
     Body.setAngle(this, 0);
     Body.setVelocity(this, { x: 0, y: 0 });
     Body.setAngularVelocity(this, 0);
-    Body.setPosition(this, { x: -15, y: -15 });
+    Body.setPosition(this, { x: -1000000, y: -1000000 });
   };
+
+  label == "white"
+    ? (this.body.resetWhite = function (position) {
+        // World.remove(world, this.body);
+        Body.setAngle(this, 0);
+        Body.setVelocity(this, { x: 0, y: 0 });
+        Body.setAngularVelocity(this, 0);
+        Body.setPosition(this, position);
+      })
+    : null;
 
   this.show = function () {
     var pos = this.body.position;

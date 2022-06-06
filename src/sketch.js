@@ -244,7 +244,24 @@ function handleCollision(event) {
       for (var i = 0; i < balls.length; i++) {
         if (balls[i].body == bodyB) {
           // Removing is actually translating to invisible area
-          bodyB.removeFromWorld();
+          switch (bodyB.label) {
+            case "white":
+              // bodyB.resetWhite(startingPositions[0][0].position);
+              bodyB.removeFromWorld();
+              break;
+            case "black":
+              bodyB.removeFromWorld();
+              break;
+            case "player1":
+              bodyB.removeFromWorld();
+              break;
+            case "player2":
+              bodyB.removeFromWorld();
+              break;
+            default:
+              null;
+              break;
+          }
         }
       }
     } else if (bodyB.label.includes("hole")) {
@@ -252,7 +269,24 @@ function handleCollision(event) {
       for (var i = 0; i < balls.length; i++) {
         if (balls[i].body == bodyA) {
           // Removing is actually translating to invisible area
-          bodyA.removeFromWorld();
+          switch (bodyA.label) {
+            case "white":
+              // bodyA.resetWhite(startingPositions[0][0].position);
+              bodyA.removeFromWorld();
+              break;
+            case "black":
+              bodyA.removeFromWorld();
+              break;
+            case "player1":
+              bodyA.removeFromWorld();
+              break;
+            case "player2":
+              bodyA.removeFromWorld();
+              break;
+            default:
+              null;
+              break;
+          }
         }
       }
     }

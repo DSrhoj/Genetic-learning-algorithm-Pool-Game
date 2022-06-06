@@ -13,6 +13,12 @@ function setBalls() {
 function takeSnapshot() {
   // Record positions of balls and their labels
   var ballPositions = balls.map((ball) => {
+    // If white ball is potted (is on negative space) position it back on screen
+    if (ball.body.label == "white" && ball.body.position.x < 0) {
+      ball.body.resetWhite(startingPositions[0][0].position);
+    }
+
+    // Return shallow copies of objects because otherwise logic is bugy
     return {
       position: { ...ball.body.position },
       label: { ...ball.body.label },
