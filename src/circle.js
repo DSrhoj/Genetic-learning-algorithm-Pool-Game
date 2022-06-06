@@ -11,8 +11,12 @@ function Circle(x, y, r, isStatic, label) {
   World.add(world, this.body);
   console.log(this.body);
 
-  this.removeFromWorld = function () {
-    World.remove(world, this.body);
+  this.body.removeFromWorld = function () {
+    // World.remove(world, this.body);
+    Body.setAngle(this, 0);
+    Body.setVelocity(this, { x: 0, y: 0 });
+    Body.setAngularVelocity(this, 0);
+    Body.setPosition(this, { x: -15, y: -15 });
   };
 
   this.show = function () {

@@ -24,7 +24,7 @@ var mConstraint;
 
 // Declaring positions snapshot
 var snapshot = [];
-var shots = [];
+var stops = 0;
 
 // Set proxy to trigger takeSnapshot on balls stopping
 var isBallMoving = { value: false };
@@ -243,16 +243,16 @@ function handleCollision(event) {
       // If bodyA is hole delete bodyB
       for (var i = 0; i < balls.length; i++) {
         if (balls[i].body == bodyB) {
-          balls.splice(i, 1);
-          World.remove(world, bodyB);
+          // Removing is actually translating to invisible area
+          bodyB.removeFromWorld();
         }
       }
     } else if (bodyB.label.includes("hole")) {
       // If bodyA is hole delete bodyB
       for (var i = 0; i < balls.length; i++) {
         if (balls[i].body == bodyA) {
-          balls.splice(i, 1);
-          World.remove(world, bodyA);
+          // Removing is actually translating to invisible area
+          bodyA.removeFromWorld();
         }
       }
     }

@@ -1,68 +1,116 @@
 var startingPositions = [
   [
     {
-      x: 310,
-      y: 310,
+      position: {
+        x: 310,
+        y: 310,
+      },
+      label: "white",
     },
     {
-      x: 930,
-      y: 310,
+      position: {
+        x: 930,
+        y: 310,
+      },
+      label: "player1",
     },
     {
-      x: 956,
-      y: 295,
+      position: {
+        x: 956,
+        y: 295,
+      },
+      label: "player2",
     },
     {
-      x: 956,
-      y: 325,
+      position: {
+        x: 956,
+        y: 325,
+      },
+      label: "player1",
     },
     {
-      x: 982,
-      y: 280,
+      position: {
+        x: 982,
+        y: 280,
+      },
+      label: "player1",
     },
     {
-      x: 982,
-      y: 310,
+      position: {
+        x: 982,
+        y: 310,
+      },
+      label: "black",
     },
     {
-      x: 982,
-      y: 340,
+      position: {
+        x: 982,
+        y: 340,
+      },
+      label: "player2",
     },
     {
-      x: 1008,
-      y: 265,
+      position: {
+        x: 1008,
+        y: 265,
+      },
+      label: "player1",
     },
     {
-      x: 1008,
-      y: 295,
+      position: {
+        x: 1008,
+        y: 295,
+      },
+      label: "player2",
     },
     {
-      x: 1008,
-      y: 325,
+      position: {
+        x: 1008,
+        y: 325,
+      },
+      label: "player1",
     },
     {
-      x: 1008,
-      y: 355,
+      position: {
+        x: 1008,
+        y: 355,
+      },
+      label: "player2",
     },
     {
-      x: 1034,
-      y: 250,
+      position: {
+        x: 1034,
+        y: 250,
+      },
+      label: "player1",
     },
     {
-      x: 1034,
-      y: 280,
+      position: {
+        x: 1034,
+        y: 280,
+      },
+      label: "player2",
     },
     {
-      x: 1034,
-      y: 310,
+      position: {
+        x: 1034,
+        y: 310,
+      },
+      label: "player1",
     },
     {
-      x: 1034,
-      y: 340,
+      position: {
+        x: 1034,
+        y: 340,
+      },
+      label: "player2",
     },
     {
-      x: 1034,
-      y: 370,
+      position: {
+        x: 1034,
+        y: 370,
+      },
+      label: "player2",
     },
   ],
 ];

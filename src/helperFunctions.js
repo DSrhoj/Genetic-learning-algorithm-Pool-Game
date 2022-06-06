@@ -1,23 +1,33 @@
-// Set balls on table based on positions from variable
-// Needs tweaking in use-case where ball is poted
+// Set balls on table based on positions from variable startingPositions
 function setBalls() {
-  for (var i = 0; i < startingPositions[shots].length; i++) {
+  for (var i = 0; i < startingPositions[stops].length; i++) {
+    Body.setPosition(balls[i].body, startingPositions[stops][i].position);
     Body.setAngle(balls[i].body, 0);
-    Body.setVelocity(balls[i].body, { x: 0, y: 0 });
     Body.setAngularVelocity(balls[i].body, 0);
-    Body.setPosition(balls[i].body, startingPositions[shots][i]);
+    Body.setVelocity(balls[i].body, { x: 0, y: 0 });
   }
 }
 
 // Records positions of balls and saves them to a variable
 // Potentialy to a FILE in future
 function takeSnapshot() {
-  console.log("TOOK SNAPSHOT");
-  var ballPositions = balls.map((ball) => ball.body.position);
+  // Record positions of balls and their labels
+  var ballPositions = balls.map((ball) => {
+    return {
+      position: { ...ball.body.position },
+      label: { ...ball.body.label },
+    };
+  });
+
+  // Push recorded positions to positions list
   startingPositions.push(ballPositions);
-  console.log(startingPositions);
-  shots++;
+
+  // Increase number of balls stopping (recorded positions)
+  stops++;
+
+  // Set balls to make them stop moving after velocity < predefined value unless user requested setting balls
   setBalls();
+
   // var fs = require("fs");
   // Should write to file (dont know how w/o node.js)
   // fs.writeFile("snapshot.json", JSON.stringify(ballPositions));
