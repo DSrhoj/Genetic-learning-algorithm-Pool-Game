@@ -1,11 +1,11 @@
 # POOL GAME WITH AI BOT
 
-## GAME
+## Game
 
 Game is developed in [Matter.js] physics engine wiht [P5.js] library for displaying objects
 on screen
 
-## ALGORITHM
+## Algorithm
 
 To be described...
 
