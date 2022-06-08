@@ -1,10 +1,85 @@
-// Set balls on table based on positions from variable startingPositions
-function setBalls() {
-  for (var i = 0; i < startingPositions[stops].length; i++) {
-    Body.setPosition(balls[i].body, startingPositions[stops][i].position);
-    Body.setAngle(balls[i].body, 0);
-    Body.setAngularVelocity(balls[i].body, 0);
-    Body.setVelocity(balls[i].body, { x: 0, y: 0 });
+// Function that handles collisions between objects
+function handleCollision(event) {
+  const { pairs } = event;
+  pairs.forEach((pair) => {
+    const { bodyA, bodyB } = pair;
+    if (bodyA.label.includes("hole")) {
+      // If bodyA is hole delete bodyB
+      for (var i = 0; i < balls.length; i++) {
+        if (balls[i].body == bodyB) {
+          // Removing is actually translating to invisible area
+          switch (bodyB.label) {
+            case "white":
+              balls[i].removeFromWorld();
+              break;
+            case "black":
+              balls[i].removeFromWorld();
+              break;
+            case "player1":
+              balls[i].removeFromWorld();
+              break;
+            case "player2":
+              balls[i].removeFromWorld();
+              break;
+            default:
+              null;
+              break;
+          }
+        }
+      }
+    } else if (bodyB.label.includes("hole")) {
+      // If bodyA is hole delete bodyB
+      for (var i = 0; i < balls.length; i++) {
+        if (balls[i].body == bodyA) {
+          // Removing is actually translating to invisible area
+          switch (bodyA.label) {
+            case "white":
+              balls[i].removeFromWorld();
+              break;
+            case "black":
+              balls[i].removeFromWorld();
+              break;
+            case "player1":
+              balls[i].removeFromWorld();
+              break;
+            case "player2":
+              balls[i].removeFromWorld();
+              break;
+            default:
+              null;
+              break;
+          }
+        }
+      }
+    }
+  });
+}
+
+// Funtion that applys random force to white ball on mouse click
+function mousePressed() {
+  if (!isBallMoving.value) {
+    Body.applyForce(whiteBall.body, whiteBall.body.position, {
+      x: random(-2000, 2000),
+      y: random(-2000, 2000),
+    });
+  }
+}
+
+function keyPressed() {
+  setBalls(true);
+}
+
+// Set balls on table based on positions from variable snapshots
+function setBalls(iteration, isManual) {
+  if (isManual) {
+    isBallMoving.value = false;
+  }
+  for (var i = 0; i < snapshots[stops - 1 /* iteration - 1*/].length; i++) {
+    if (balls[i].body != null) {
+      balls[i].removeFromWorld();
+    }
+    if (snapshots[stops - 1 /* iteration - 1*/][i] != null)
+      balls[i].resetBall(snapshots[stops - 1 /* iteration - 1*/][i].position);
   }
 }
 
@@ -14,19 +89,25 @@ function takeSnapshot() {
   // Record positions of balls and their labels
   var ballPositions = balls.map((ball) => {
     // If white ball is potted (is on negative space) position it back on screen
-    if (ball.body.label == "white" && ball.body.position.x < 0) {
-      ball.body.resetWhite(startingPositions[0][0].position);
+    if (!world.bodies.find((body) => body.label == "white") && snapshots[0]) {
+      ball.resetBall(
+        snapshots[0].find((ball) => ball.label == "white").position
+      );
     }
 
-    // Return shallow copies of objects because otherwise logic is bugy
-    return {
-      position: { ...ball.body.position },
-      label: { ...ball.body.label },
-    };
+    // Return shallow copies of objects if their bodys exist (not potted) because otherwise logic is bugy
+    if (ball.body) {
+      return {
+        position: { ...ball.body.position },
+        label: ball.body.label,
+      };
+    } else {
+      return null;
+    }
   });
 
   // Push recorded positions to positions list
-  startingPositions.push(ballPositions);
+  snapshots.push(ballPositions);
 
   // Increase number of balls stopping (recorded positions)
   stops++;
@@ -43,7 +124,7 @@ function takeSnapshot() {
 function isObjectMoving(objects) {
   var isMoving = false;
   objects.forEach((object) => {
-    if (object.body.speed > 0.05) {
+    if (object.body && object.body.speed > 0.05) {
       isMoving = true;
     }
   });

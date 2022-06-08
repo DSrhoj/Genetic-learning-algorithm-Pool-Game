@@ -22,8 +22,8 @@ var boundaries = [];
 var mouse;
 var mConstraint;
 
-// Declaring positions snapshot
-var snapshot = [];
+// Declaring positions in snapshot
+var snapshots = [];
 var stops = 0;
 
 // Set proxy to trigger takeSnapshot on balls stopping
@@ -232,79 +232,9 @@ function setup() {
 
   // Starts collision event for any colision
   Events.on(engine, "collisionStart", handleCollision);
-}
 
-// Function that handles collisions between objects
-function handleCollision(event) {
-  const { pairs } = event;
-  pairs.forEach((pair) => {
-    const { bodyA, bodyB } = pair;
-    if (bodyA.label.includes("hole")) {
-      // If bodyA is hole delete bodyB
-      for (var i = 0; i < balls.length; i++) {
-        if (balls[i].body == bodyB) {
-          // Removing is actually translating to invisible area
-          switch (bodyB.label) {
-            case "white":
-              // bodyB.resetWhite(startingPositions[0][0].position);
-              bodyB.removeFromWorld();
-              break;
-            case "black":
-              bodyB.removeFromWorld();
-              break;
-            case "player1":
-              bodyB.removeFromWorld();
-              break;
-            case "player2":
-              bodyB.removeFromWorld();
-              break;
-            default:
-              null;
-              break;
-          }
-        }
-      }
-    } else if (bodyB.label.includes("hole")) {
-      // If bodyA is hole delete bodyB
-      for (var i = 0; i < balls.length; i++) {
-        if (balls[i].body == bodyA) {
-          // Removing is actually translating to invisible area
-          switch (bodyA.label) {
-            case "white":
-              // bodyA.resetWhite(startingPositions[0][0].position);
-              bodyA.removeFromWorld();
-              break;
-            case "black":
-              bodyA.removeFromWorld();
-              break;
-            case "player1":
-              bodyA.removeFromWorld();
-              break;
-            case "player2":
-              bodyA.removeFromWorld();
-              break;
-            default:
-              null;
-              break;
-          }
-        }
-      }
-    }
-  });
-}
-
-// Funtion that applys random force to white ball on mouse click
-function mousePressed() {
-  if (!isBallMoving.value) {
-    Body.applyForce(whiteBall.body, whiteBall.body.position, {
-      x: random(500, 1000),
-      y: random(500, 1000),
-    });
-  }
-}
-
-function keyPressed() {
-  setBalls();
+  // Create snaphot from starting positions
+  takeSnapshot();
 }
 
 // Function that draws objects created in the engine
@@ -328,7 +258,7 @@ function draw() {
 
   // Draw balls
   for (var i = 0; i < balls.length; i++) {
-    balls[i].show();
+    if (balls[i].body) balls[i].show();
   }
 
   // Set isBallMoving.value
