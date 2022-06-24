@@ -55,8 +55,10 @@ function handleCollision(event) {
   });
 }
 
-// Funtion that applys random force to white ball on mouse click
+// Funtion that applys random force to white ball (id=1) on mouse click
 function mousePressed() {
+  var whiteBall = balls.find(ball => ball && ball.body.id==1);
+
   if (!isBallMoving.value) {
     Body.applyForce(whiteBall.body, whiteBall.body.position, {
       x: random(-2000, 2000),
@@ -86,20 +88,25 @@ function setBalls(iteration, isManual) {
 // Records positions of balls and saves them to a variable
 // Potentialy to a FILE in future
 function takeSnapshot() {
+
   // Record positions of balls and their labels
   var ballPositions = balls.map((ball) => {
+
+    var tempBall = ball;
     // If white ball is potted (is on negative space) position it back on screen
     if (!world.bodies.find((body) => body.label == "white") && snapshots[0]) {
       ball.resetBall(
         snapshots[0].find((ball) => ball.label == "white").position
       );
     }
-
     // Return shallow copies of objects if their bodys exist (not potted) because otherwise logic is bugy
-    if (ball.body) {
+    if (tempBall.body) {
       return {
-        position: { ...ball.body.position },
-        label: ball.body.label,
+        position: { ...tempBall.body.position },
+        label: tempBall.body.label,
+        id: tempBall.body.id,
+        potted: tempBall.body.potted,
+
       };
     } else {
       return null;

@@ -12,8 +12,6 @@ var engine;
 var world;
 
 // Declaring variables for table and balls
-var whiteBall;
-var blackBall;
 var balls = [];
 var holes = [];
 var boundaries = [];
@@ -22,20 +20,64 @@ var boundaries = [];
 var mouse;
 var mConstraint;
 
-// Declaring positions in snapshot
+// Declaring needed constants
 var snapshots = [];
+var checkpoints = [];
+var numberOfEpochs = 2;
 var stops = 0;
+var AIroundsCounter = 0;
+var AInumberOfAttempts = 2;
+var good = 0;
+
 
 // Set proxy to trigger takeSnapshot on balls stopping
 var isBallMoving = { value: false };
 var isBallMovingProxy = new Proxy(isBallMoving, {
   set: function (target, key, value) {
     if (isBallMoving.value == true && value == false) {
+
       takeSnapshot();
+      //If the checkpoint number is even, user has taken a shot. Its time for the AI.
+      if(checkpoints.length%2==0){
+        checkpoints.push(snapshots[snapshots.length-1]);
+        World.remove(world, mConstraint);
+        AIshoots();
+      }
+      //If the number of checkpoints is odd and number of shots taken by AI equals the set number of attempts, its time for the user to take a shot.
+      else if(AIroundsCounter == AInumberOfAttempts){
+        checkpoints.push(snapshots[snapshots.length-1]);
+        World.add(world, mConstraint);
+        AIroundsCounter = 0;
+      }
+      //If the number of checkpoints is odd and not enough shots were taken by AI, shoot more.
+      else if(checkpoints.length%2!=0){
+        World.remove(world, mConstraint);
+        AIshoots();
+      };
+
+      good = goodness(snapshots[snapshots.length-2], snapshots[snapshots.length-1]);
+      console.log("This is calculated goodness:" + good);
+
+      cleanTable();
+      addBallsFromSnapshot(checkpoints[checkpoints.length-1]);
     }
     target[key] = value;
   },
 });
+
+function AIshoots(){
+  //Just automaticlly shoots after 1 second.
+  let t = setTimeout(()=>{
+    var whiteBall = balls.find(ball => ball && ball.body.id==1);
+    if(!isBallMoving.value){
+      Body.applyForce(whiteBall.body, whiteBall.body.position, {
+        x: random(-2000, 2000),
+        y: random(-2000, 2000),
+      });
+      AIroundsCounter++;
+    }
+  }, 1000);
+}
 
 // Function that creates objects in world using engine
 function setup() {
@@ -81,16 +123,24 @@ function setup() {
 
   // // Creating balls on the table from left to right, top to bottom
   balls.push(
-    (whiteBall = new Circle(
+    new Circle(
       startPositionWidth / 3,
       startPositionHeight,
       ballSize,
       false,
-      "white"
-    ))
+      "white",
+      1
+    )
   );
   balls.push(
-    new Circle((width / 4) * 3, startPositionHeight, ballSize, false, "player1")
+    new Circle(
+      (width / 4) * 3, 
+      startPositionHeight, 
+      ballSize, 
+      false, 
+      "player1",
+      2
+    )
   );
   balls.push(
     new Circle(
@@ -98,7 +148,8 @@ function setup() {
       startPositionHeight - ballSize,
       ballSize,
       false,
-      "player2"
+      "player2",
+      3
     )
   );
   balls.push(
@@ -107,7 +158,8 @@ function setup() {
       startPositionHeight + ballSize,
       ballSize,
       false,
-      "player1"
+      "player1",
+      4
     )
   );
   balls.push(
@@ -116,7 +168,8 @@ function setup() {
       startPositionHeight - 2 * ballSize,
       ballSize,
       false,
-      "player1"
+      "player1",
+      5
     )
   );
   balls.push(
@@ -126,7 +179,8 @@ function setup() {
       startPositionHeight,
       ballSize,
       false,
-      "black"
+      "black",
+      6
     ))
   );
   balls.push(
@@ -135,7 +189,8 @@ function setup() {
       startPositionHeight + 2 * ballSize,
       ballSize,
       false,
-      "player2"
+      "player2",
+      7
     )
   );
   balls.push(
@@ -144,7 +199,8 @@ function setup() {
       startPositionHeight - 3 * ballSize,
       ballSize,
       false,
-      "player1"
+      "player1",
+      8
     )
   );
   balls.push(
@@ -153,7 +209,8 @@ function setup() {
       startPositionHeight - ballSize,
       ballSize,
       false,
-      "player2"
+      "player2",
+      9
     )
   );
   balls.push(
@@ -162,7 +219,8 @@ function setup() {
       startPositionHeight + ballSize,
       ballSize,
       false,
-      "player1"
+      "player1",
+      10
     )
   );
   balls.push(
@@ -171,7 +229,8 @@ function setup() {
       startPositionHeight + 3 * ballSize,
       ballSize,
       false,
-      "player2"
+      "player2",
+      11
     )
   );
   balls.push(
@@ -180,7 +239,8 @@ function setup() {
       startPositionHeight - 4 * ballSize,
       ballSize,
       false,
-      "player1"
+      "player1",
+      12
     )
   );
   balls.push(
@@ -189,7 +249,8 @@ function setup() {
       startPositionHeight - 2 * ballSize,
       ballSize,
       false,
-      "player2"
+      "player2",
+      13
     )
   );
   balls.push(
@@ -198,7 +259,8 @@ function setup() {
       startPositionHeight,
       ballSize,
       false,
-      "player1"
+      "player1",
+      14
     )
   );
   balls.push(
@@ -207,7 +269,8 @@ function setup() {
       startPositionHeight + 2 * ballSize,
       ballSize,
       false,
-      "player2"
+      "player2",
+      15
     )
   );
   balls.push(
@@ -216,7 +279,8 @@ function setup() {
       startPositionHeight + 4 * ballSize,
       ballSize,
       false,
-      "player2"
+      "player2",
+      16
     )
   );
 
@@ -236,6 +300,31 @@ function setup() {
   // Create snaphot from starting positions
   takeSnapshot();
 }
+
+//Clears the table of all balls.
+function cleanTable(){
+  balls.forEach(ball => {if(ball.body) ball.removeFromWorld()});
+  balls = [];
+};
+
+//Creats new balls accordingly to the last snapshot.
+function addBallsFromSnapshot(snapshot){
+  var ballSize = 15;
+  snapshot.forEach(ball => {
+    if(ball){
+      balls.push(
+        new Circle(
+          ball.position.x,
+          ball.position.y,
+          ballSize,
+          false,
+          ball.label,
+          ball.id,
+        )
+      )
+    }
+  });
+};
 
 // Function that draws objects created in the engine
 // Otherwise objects would not be visible on the screen

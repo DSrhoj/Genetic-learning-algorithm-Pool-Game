@@ -6,6 +6,7 @@ var startingPositions = [
         y: 310,
       },
       label: "white",
+      id:1,
     },
     {
       position: {
@@ -13,6 +14,7 @@ var startingPositions = [
         y: 310,
       },
       label: "player1",
+      id:2,
     },
     {
       position: {
@@ -20,6 +22,7 @@ var startingPositions = [
         y: 295,
       },
       label: "player2",
+      id:3,
     },
     {
       position: {
@@ -27,6 +30,7 @@ var startingPositions = [
         y: 325,
       },
       label: "player1",
+      id:4,
     },
     {
       position: {
@@ -34,6 +38,7 @@ var startingPositions = [
         y: 280,
       },
       label: "player1",
+      id:5,
     },
     {
       position: {
@@ -41,6 +46,7 @@ var startingPositions = [
         y: 310,
       },
       label: "black",
+      id:6,
     },
     {
       position: {
@@ -48,6 +54,7 @@ var startingPositions = [
         y: 340,
       },
       label: "player2",
+      id:7,
     },
     {
       position: {
@@ -55,6 +62,7 @@ var startingPositions = [
         y: 265,
       },
       label: "player1",
+      id:8,
     },
     {
       position: {
@@ -62,6 +70,7 @@ var startingPositions = [
         y: 295,
       },
       label: "player2",
+      id:9,
     },
     {
       position: {
@@ -69,6 +78,7 @@ var startingPositions = [
         y: 325,
       },
       label: "player1",
+      id:10,
     },
     {
       position: {
@@ -76,6 +86,7 @@ var startingPositions = [
         y: 355,
       },
       label: "player2",
+      id:11,
     },
     {
       position: {
@@ -83,6 +94,7 @@ var startingPositions = [
         y: 250,
       },
       label: "player1",
+      id:12,
     },
     {
       position: {
@@ -90,6 +102,7 @@ var startingPositions = [
         y: 280,
       },
       label: "player2",
+      id:13,
     },
     {
       position: {
@@ -97,6 +110,7 @@ var startingPositions = [
         y: 310,
       },
       label: "player1",
+      id:14,
     },
     {
       position: {
@@ -104,6 +118,7 @@ var startingPositions = [
         y: 340,
       },
       label: "player2",
+      id:15,
     },
     {
       position: {
@@ -111,6 +126,7 @@ var startingPositions = [
         y: 370,
       },
       label: "player2",
+      id:16,
     },
   ],
 ];

@@ -1,15 +1,16 @@
-function Circle(x, y, r, isStatic, label) {
+function Circle(x, y, r, isStatic, label, id) {
   var options = {
     friction: 0,
     restitution: 1,
     isStatic: isStatic,
     isSensor: isStatic,
     label: label ? label : "",
+    //Id for differenciating balls whilst calculating goodness. White is 1, Black is 6.
+    id: id ? id : "",
   };
   this.body = Bodies.circle(x, y, r, options);
   this.r = r;
   World.add(world, this.body);
-  console.log(this.body);
 
   this.removeFromWorld = function () {
     World.remove(world, this.body);
