@@ -55,7 +55,6 @@ function handleCollision(event) {
   });
 }
 
-
 // Funtion that applys random force to white ball (id=1) on mouse click
 function mousePressed() {
   var whiteBall = balls.find((ball) => ball && ball.id == 1);
@@ -74,14 +73,12 @@ function mousePressed() {
   }
 }
 
-
 //Clears the table of all balls.
 function cleanTable() {
   balls.forEach((ball) => {
     if (ball.body) ball.removeFromWorld();
   });
 }
-
 
 //Creats new balls accordingly to the last snapshot.
 function addBallsFromSnapshot(snapshot) {
@@ -92,13 +89,11 @@ function addBallsFromSnapshot(snapshot) {
   });
 }
 
-
 // Set balls on table based on positions from variable snapshot.
 function setBalls(snapshot) {
   cleanTable();
   addBallsFromSnapshot(snapshot);
 }
-
 
 // Records positions of balls and saves them to a variable (Potentialy to a FILE in future)
 function takeSnapshot() {
@@ -130,11 +125,9 @@ function takeSnapshot() {
   setBalls(snapshots[snapshots.length - 1]);
 }
 
-
 function takeCheckpoint(snapshot) {
   checkpoints.push(snapshot);
 }
-
 
 // Check if any object from list of objects is moving faster than 0.05units
 function isObjectMoving(objects) {
@@ -149,31 +142,45 @@ function isObjectMoving(objects) {
 
 // Checks if a players ball has been potted. Compares the number of players balls before and after the shot.
 function hasPottedOwn(previousCheckpoint, currentCheckpoint, player) {
-
-  var playersBallCountPrevious = previousCheckpoint.filter(ball => { 
-    if(ball){ return ball.label==player; }
-    else return false;
-  }).length;
-
-  var playersBallCountCurrent = currentCheckpoint.filter(ball => { 
-    if(ball){return ball.label==player; }
-    else return false;
-  }).length;
-
-
-  if(playersBallCountPrevious > playersBallCountCurrent) {
+  if (playersBallCount(previousCheckpoint, player) > playersBallCount(currentCheckpoint, player)) {
     return true;
   }
   return false;
 }
 
+function endGame() {
+  document.getElementById("title").innerText = "Game Over";
+}
+
+function pronounceWinner(lastCheckpoint, isAIPlaying) {
+  lastShotPlayer = isAIPlaying ? "player1" : "player2";
+  current = lastShotPlayer == "player1" ? "COMPUTER" : "YOU";
+  other = lastShotPlayer == "player1" ? "YOU" : "COMPUTER";
+  if (playersBallCount(lastCheckpoint, lastShotPlayer) == 0) {
+    document.getElementById("currentPlayer").innerText = `Winner is: ${current}`;
+  } else {
+    document.getElementById("currentPlayer").innerText = `Winner is: ${other}`;;
+  }
+}
+
+function isBlackPotted(checkpoint) {
+  black = checkpoint.find((ball) => ball && ball.label == "black");
+  if(black) return false;
+  else return true;
+}
+
+function playersBallCount(checkpoint, player) {
+  return checkpoint.filter(ball => { 
+    if (ball) return ball.label==player;
+    else return false;
+  }).length;
+}
 
 // Changes the header text for the current player.
 function changeCurrentPlayer() {
   var currentPlayer = document.getElementById("currentPlayer").innerText;
-  if (currentPlayer == "YOU") {
-    document.getElementById("currentPlayer").innerText = "COMPUTER";
-  } else document.getElementById("currentPlayer").innerText = "YOU";
+  currentPlayer == "YOU" ? document.getElementById("currentPlayer").innerText = "COMPUTER"
+  : document.getElementById("currentPlayer").innerText = "YOU";
 }
 
 function getForceAmplitude(ball, cue) {
@@ -203,9 +210,9 @@ function getPositionOfCue(ball, mouse) {
     y: ball.y + derivation * (x2 - ball.x),
   };
 
-  if (distance(ball, mouse) > 200 && mouse.x > ball.x) {
+  if (distance(ball, mouse) > 200 && mouse.x < ball.x) {
     return point1;
-  } else if (distance(ball, mouse) > 200 && mouse.x < ball.x) {
+  } else if (distance(ball, mouse) > 200 && mouse.x > ball.x) {
     return point2;
   } else {
     return mouse;

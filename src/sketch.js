@@ -45,16 +45,23 @@ var isBallMovingProxy = new Proxy(isBallMoving, {
         takeCheckpoint(snapshots[snapshots.length - 1]);
         AIroundsCounter = 0;
         
-        isAIPlaying = hasPottedOwn(checkpoints[checkpoints.length - 2], checkpoints[checkpoints.length - 1], "player1");
-        if(isAIPlaying == false) {
-          World.add(world, mConstraint);
-          console.log("USERS TURN !!!");
-          changeCurrentPlayer();
-        }
-        else {
-          // "Pokeing" the proxy.
-          isBallMovingProxy.value = true;
-          isBallMovingProxy.value = false;
+        if (isBlackPotted(checkpoints[checkpoints.length - 1])) {
+          endGame();
+          console.log(isAIPlaying)
+          pronounceWinner(checkpoints[checkpoints.length - 1], isAIPlaying)
+          console.log("END GAME");
+        } else {
+          isAIPlaying = hasPottedOwn(checkpoints[checkpoints.length - 2], checkpoints[checkpoints.length - 1], "player1");
+          if(isAIPlaying == false) {
+            World.add(world, mConstraint);
+            console.log("USERS TURN !!!");
+            changeCurrentPlayer();
+          }
+          else {
+            // "Pokeing" the proxy.
+            isBallMovingProxy.value = true;
+            isBallMovingProxy.value = false;
+          }
         }
       }
       
@@ -121,20 +128,25 @@ var isBallMovingProxy = new Proxy(isBallMoving, {
       else if (isAIPlaying == false) {
         takeSnapshot();
         takeCheckpoint(snapshots[snapshots.length - 1]);
-        
-        isAIPlaying = !hasPottedOwn(checkpoints[checkpoints.length - 2], checkpoints[checkpoints.length - 1], "player2");
-        if(isAIPlaying == true) {
-          World.remove(world, mConstraint);
-          console.log("AIs TURN !!!");
-          changeCurrentPlayer();
-          // Generate new initial population
-          population = generateInitialPopulation();
-          //Tricks the proxy, to switch the control to AI and make it shoot.
-          isBallMovingProxy.value = true;
-          isBallMovingProxy.value = false;
-        }
-        else {
-          World.add(world, mConstraint);
+        if(isBlackPotted(checkpoints[checkpoints.length - 1])) {
+          endGame();
+          pronounceWinner(checkpoints[checkpoints.length - 1], isAIPlaying)
+          console.log("END GAME");
+        } else {
+          isAIPlaying = !hasPottedOwn(checkpoints[checkpoints.length - 2], checkpoints[checkpoints.length - 1], "player2");
+          if(isAIPlaying == true) {
+            World.remove(world, mConstraint);
+            console.log("AIs TURN !!!");
+            changeCurrentPlayer();
+            // Generate new initial population
+            population = generateInitialPopulation();
+            //Tricks the proxy, to switch the control to AI and make it shoot.
+            isBallMovingProxy.value = true;
+            isBallMovingProxy.value = false;
+          }
+          else {
+            World.add(world, mConstraint);
+          }
         }
       }
     }
