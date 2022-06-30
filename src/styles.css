@@ -1,0 +1,9 @@
+body {
+  text-align: center;
+}
+
+#defaultCanvas0 {
+  /* display: inline-block; */
+  border-radius: 25px;
+  /* padding: 200px; */
+}
