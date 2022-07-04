@@ -210,9 +210,9 @@ function getPositionOfCue(ball, mouse) {
     y: ball.y + derivation * (x2 - ball.x),
   };
 
-  if (distance(ball, mouse) > 200 && mouse.x < ball.x) {
+  if (distance(ball, mouse) > 200 && mouse.x > ball.x) {
     return point1;
-  } else if (distance(ball, mouse) > 200 && mouse.x > ball.x) {
+  } else if (distance(ball, mouse) > 200 && mouse.x < ball.x) {
     return point2;
   } else {
     return mouse;
